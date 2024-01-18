@@ -1,0 +1,66 @@
+function main() {
+  // Get the current account
+  var account = AdsApp.currentAccount();
+  
+  // Provide the Google Sheets URL here
+  var spreadsheetURL = "ENTER_YOUR_SPREADSHEET_URL_HERE";
+  var spreadsheet = SpreadsheetApp.openByUrl(spreadsheetURL);
+  var sheet = spreadsheet.getSheets()[0]; // Negatives are in first sheet
+
+  // Iterate through all ad groups in the account
+  var adGroupsIterator = AdsApp.adGroups().get();
+
+  while (adGroupsIterator.hasNext()) {
+    var adGroup = adGroupsIterator.next();
+    var adGroupName = adGroup.getName();
+    
+    // Check if the ad group has a label named "Automated negatives"
+    if (hasLabel(adGroup, "Automate negatives")) {
+      // Fetch all keywords in the ad group
+      var keywordsIterator = adGroup.keywords().get();
+      var adGroupKeywords = [];
+
+      while (keywordsIterator.hasNext()) {
+        var keyword = keywordsIterator.next();
+        adGroupKeywords.push(keyword.getText());
+      }
+
+      // Get the search terms ordered by clicks in the last 7 days
+      var searchTermsQuery = "SELECT Query FROM SEARCH_QUERY_PERFORMANCE_REPORT " +
+        "WHERE Clicks > 0 " +
+        "DURING LAST_7_DAYS " +
+        "ORDER BY Clicks DESC ";
+
+      var searchTermsIterator = AdsApp.report(searchTermsQuery).rows();
+
+      while (searchTermsIterator.hasNext()) {
+        var searchTerm = searchTermsIterator.next();
+        var searchTermText = searchTerm["Query"].trim();
+
+        // Check if the search term is not in the ad group's keywords
+        if (adGroupKeywords.indexOf(searchTermText) === -1) {
+          adGroup.createNegativeKeyword("[" + searchTermText + "]");
+          
+          // Log to Google Sheets
+          var currentDate = new Date();
+          var rowData = [currentDate, adGroupName, "["+searchTermText+"]"];
+          sheet.appendRow(rowData);
+          
+          Logger.log("Excluded search term in ad group '" + adGroupName + "': " + searchTermText);
+        }
+      }
+    }
+  }
+}
+
+// Helper function to check if an ad group has a specific label
+function hasLabel(adGroup, labelName) {
+  var labels = adGroup.labels().get();
+  while (labels.hasNext()) {
+    var label = labels.next();
+    if (label.getName() === labelName) {
+      return true;
+    }
+  }
+  return false;
+}
