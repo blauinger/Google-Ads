@@ -1,17 +1,15 @@
 function main() {
-  // Get the current account
-  var account = AdsApp.currentAccount();
-  
   // Provide the Google Sheets URL here
   var spreadsheetURL = "ENTER_YOUR_SPREADSHEET_URL_HERE";
   var spreadsheet = SpreadsheetApp.openByUrl(spreadsheetURL);
-  var sheet = spreadsheet.getSheets()[0]; // Negatives are in first sheet
+  var sheet = spreadsheet.getSheets()[0]; // Negatives are in the first sheet
 
   // Iterate through all ad groups in the account
   var adGroupsIterator = AdsApp.adGroups().get();
 
   while (adGroupsIterator.hasNext()) {
     var adGroup = adGroupsIterator.next();
+    var adGroupId = adGroup.getId();
     var adGroupName = adGroup.getName();
     
     // Check if the ad group has a label named "Automated negatives"
@@ -25,9 +23,10 @@ function main() {
         adGroupKeywords.push(keyword.getText());
       }
 
-      // Get the search terms ordered by clicks in the last 7 days
+      // Get the search terms for the current ad group ordered by clicks in the last 7 days
       var searchTermsQuery = "SELECT Query FROM SEARCH_QUERY_PERFORMANCE_REPORT " +
-        "WHERE Clicks > 0 " +
+        "WHERE AdGroupId = " + adGroupId +
+        " AND Clicks > 0 " +
         "DURING LAST_7_DAYS " +
         "ORDER BY Clicks DESC ";
 
@@ -43,7 +42,7 @@ function main() {
           
           // Log to Google Sheets
           var currentDate = new Date();
-          var rowData = [currentDate, adGroupName, "["+searchTermText+"]"];
+          var rowData = [currentDate, adGroupName, "[" + searchTermText + "]"];
           sheet.appendRow(rowData);
           
           Logger.log("Excluded search term in ad group '" + adGroupName + "': " + searchTermText);
