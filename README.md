@@ -1,10 +1,11 @@
 What this script does: 
 For adgroups labeled "Automated negatives" all search terms of the last 7 days will be matched against the keywords in the adgroup.
-If the search term is not a exact match in the adgroup, it will be added as a negative. 
-Only search terms with clicks > 0 in past 7 days are considered. 
+If the search term is not a exact match in the adgroup, it will be added as a negative. #
+
+Beware: Also very close variants can will be excluded. the script only checks if search_term == any_keyword_in_adgroup
 
 If you do not want to auto exclude: 
-Use the script in "preview mode" the tab "Excluded Search terms" will still be filled and you can choose to add negatives manually
+Use the script in "preview" mode. the tab "Excluded Search terms" will still be filled and you can choose to add negatives manually and also add more exact matches before automating.
 
 How to use
 1. label the adgroups you want to adjust in your account. Add the label "Automate negatives". Beware capitalization!
