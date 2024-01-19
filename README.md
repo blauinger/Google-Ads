@@ -10,9 +10,10 @@ Use the script in "preview" mode. the tab "Excluded Search terms" will still be 
 How to use
 1. label the adgroups you want to adjust in your account. Add the label "Automate negatives". Beware capitalization!
 2. Create a copy of this Gsheet and paste the url in line 6 of the script
-3. Click preview and authorize
-4. If you manually want to check search terms, go to "excluded search terms" and exclude respective keywords
-5. If you want to automatically exclude search terms, add a weekly interval to run the script
+3. https://docs.google.com/spreadsheets/d/1HrpFYk7WLV5eWgk0crYkFPgy1oycyuZ-0ZXzkum2gh0/edit#gid=0
+4. Click preview and authorize
+5. If you manually want to check search terms, go to "excluded search terms" in the gsheet and copy / paste keywords
+6. If you want to automatically exclude search terms, run the script. All the keywords shown in the gsheet will be excluded form the adgroup
 
 advanced use: 
-- if your adgroups are very big you can also change line 30 to be larger than any other number than 0
+- if your adgroups are very big you can also change line 30 to be larger than any other number than 0 (it is the click threshold for filtering)
