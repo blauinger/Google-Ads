@@ -12,7 +12,7 @@ function main() {
     var adGroupId = adGroup.getId();
     var adGroupName = adGroup.getName();
     
-    // Check if the ad group has a label named "Automated negatives"
+    // Check if the ad group has a label named "Automate negatives"
     if (hasLabel(adGroup, "Automate negatives")) {
       // Fetch all keywords in the ad group
       var keywordsIterator = adGroup.keywords().get();
