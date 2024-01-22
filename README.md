@@ -12,7 +12,7 @@ How to use
 2. Create a new Script in Google Ads and name it: "Automate Negatives". Use the code from "Automated negatives - Script" here in github.
 3. Create a copy of this Gsheet and paste the url in line 3 of the script: https://docs.google.com/spreadsheets/d/1HrpFYk7WLV5eWgk0crYkFPgy1oycyuZ-0ZXzkum2gh0/edit#gid=0
 4. Click preview and authorize
-5. If you manually want to check search terms, go to "excluded search terms" in the gsheet and copy / paste keywords. They will be filled with preview mode too!
+5. If you manually want to check search terms, go to "excluded search terms" in the gsheet and copy / paste keywords. They will be filled with preview mode too (but not excluded)!
 6. If you want to automatically exclude search terms, run the script. All the keywords shown in the gsheet will be excluded form the adgroup. 
 
 advanced use: 
