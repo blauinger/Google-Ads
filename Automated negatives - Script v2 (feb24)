@@ -1,1 +1,109 @@
+function main() {
+  // Provide the Google Sheets URL here
+  var spreadsheetURL = "https://docs.google.com/spreadsheets/d/1M-YmJLgMaAceseM4ZKl5dv4obJl0wXxXsqd5ZLTr8Ik/edit#gid=6886337";
+  var spreadsheet = SpreadsheetApp.openByUrl(spreadsheetURL);
+  var sheet = spreadsheet.getSheetByName("Search Term Data"); // Negatives are in the first sheet
+  var settingsSheet = spreadsheet.getSheetByName("Script Settings");
 
+  clearSheetExceptHeadline(spreadsheetURL, "Search Term Data")
+  
+  //Script settings
+  var automateNegatives = settingsSheet.getRange("C2").getValue();
+  
+  
+  // Iterate through all ad groups in the account
+  var adGroupsIterator = AdsApp.adGroups().get();
+
+  while (adGroupsIterator.hasNext()) {
+    var adGroup = adGroupsIterator.next();
+    var adGroupId = adGroup.getId();
+    var adGroupName = adGroup.getName();
+    
+    // Check if the ad group has a label named "Automate negatives"
+    if (hasLabel(adGroup, "Automate negatives")) {
+      // Fetch all keywords in the ad group
+      var keywordsIterator = adGroup.keywords().get();
+      var adGroupKeywords = [];
+
+      while (keywordsIterator.hasNext()) {
+        var keyword = keywordsIterator.next();
+        adGroupKeywords.push(keyword.getText());
+      }
+
+      // Get the search terms for the current ad group ordered by clicks in the last 30 days
+      var searchTermsQuery = "SELECT Query, Cost, Clicks, Conversions, ConversionValue, QueryMatchTypeWithVariant FROM SEARCH_QUERY_PERFORMANCE_REPORT " +
+        "WHERE AdGroupId = " + adGroupId +
+        " AND Clicks > 0 " +
+        "DURING LAST_7_DAYS " +
+        "ORDER BY Clicks DESC ";
+
+      var searchTermsIterator = AdsApp.report(searchTermsQuery).rows();
+
+      while (searchTermsIterator.hasNext()) {
+        var searchTerm = searchTermsIterator.next();
+        var searchTermText = searchTerm["Query"].trim();
+        var searchTermCost = searchTerm["Cost"]
+        var searchTermClicks = searchTerm["Clicks"]
+        var searchTermConversions = searchTerm["Conversions"]
+        var searchTermConversionValue = searchTerm["ConversionValue"]
+        var matchTypeVariant = searchTerm["QueryMatchTypeWithVariant"]
+        var currentDate = new Date();
+        
+        // Check if the search term is not in the ad group's keywords
+        if (adGroupKeywords.indexOf(searchTermText) === -1 && matchTypeVariant == "exact (close variant)") {
+          if(automateNegatives == "Yes"){
+            adGroup.createNegativeKeyword("[" + searchTermText + "]");
+            Logger.log("Excluded search term in ad group '" + adGroupName + "': " + searchTermText);
+          }
+          
+          // Log to Google Sheets
+          var rowData = [currentDate, adGroupName, "[" + searchTermText + "]", searchTermCost, searchTermClicks, searchTermConversions, searchTermConversionValue, matchTypeVariant, "Search Term Excluded"];
+          sheet.appendRow(rowData);
+          
+          
+        }
+        else {var rowData = [currentDate, adGroupName, "[" + searchTermText + "]", searchTermCost, searchTermClicks, searchTermConversions, searchTermConversionValue, matchTypeVariant, "Search Term Not Excluded"];
+          sheet.appendRow(rowData);}
+      }
+    }
+  }
+}
+
+// Helper function to check if an ad group has a specific label
+function hasLabel(adGroup, labelName) {
+  var labels = adGroup.labels().get();
+  while (labels.hasNext()) {
+    var label = labels.next();
+    if (label.getName() === labelName) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+function clearSheetExceptHeadline(spreadsheetURL, sheetName) {
+  // Open the spreadsheet by URL (or you could use SpreadsheetApp.getActiveSpreadsheet() if the script is bound to the spreadsheet)
+  var spreadsheet = SpreadsheetApp.openByUrl(spreadsheetURL);
+  
+  // Access the specified sheet by name
+  var sheet = spreadsheet.getSheetByName(sheetName);
+  
+  // Check if the sheet exists
+  if (!sheet) {
+    Logger.log("Sheet not found: " + sheetName);
+    return; // Exit the function if the sheet does not exist
+  }
+  
+  // Get the number of rows and columns to clear
+  var lastRow = sheet.getLastRow();
+  var lastColumn = sheet.getLastColumn();
+  
+  // Ensure there are rows to clear beyond the headline
+  if (lastRow > 1) {
+    // Clear all rows except the first one (headline)
+    sheet.getRange(2, 1, lastRow - 1, lastColumn).clearContent();
+  } else {
+    Logger.log("No data to clear below the headline row in sheet: " + sheetName);
+  }
+}
