@@ -1,6 +1,6 @@
 function main() {
   // Provide the Google Sheets URL here
-  var spreadsheetURL = "https://docs.google.com/spreadsheets/d/1M-YmJLgMaAceseM4ZKl5dv4obJl0wXxXsqd5ZLTr8Ik/edit#gid=6886337";
+  var spreadsheetURL = "";
   var spreadsheet = SpreadsheetApp.openByUrl(spreadsheetURL);
   var sheet = spreadsheet.getSheetByName("Search Term Data"); // Negatives are in the first sheet
   var settingsSheet = spreadsheet.getSheetByName("Script Settings");
