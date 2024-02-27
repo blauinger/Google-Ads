@@ -11,7 +11,7 @@ How to use
 
 1. label the adgroups you want to adjust in your account, Add the label "Automate negatives", Beware capitalization!
 2. Create a copy of this Gsheet and paste the url in line 3 of the script
-3. Ghseet: [https://docs.google.com/spreadsheets/d/1jz8t4fbX_R6N3oZDjJkvI-RmmN3U5J4kE9-uiDWwI1U/edit#gid=6886337](https://docs.google.com/spreadsheets/d/1jz8t4fbX_R6N3oZDjJkvI-RmmN3U5J4kE9-uiDWwI1U/copy)
+3. Ghseet: https://docs.google.com/spreadsheets/d/1jz8t4fbX_R6N3oZDjJkvI-RmmN3U5J4kE9-uiDWwI1U/copy
 4. Click "run" and authorize
 5. In the first two graphs in "Overview graphs" you can see cost and conversions triggered by match type. 
 In the two thereafter you can see which search terms are excluded and which ones are not (all non exact matches get excluded)
